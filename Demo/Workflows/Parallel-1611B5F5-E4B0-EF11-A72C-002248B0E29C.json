@@ -1,0 +1,167 @@
+{
+  "properties": {
+    "connectionReferences": {},
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "1fca1d68-6319-469a-b875-515ad469b532"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "required": []
+            }
+          }
+        }
+      },
+      "actions": {
+        "Array": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "5d1be5c1-4270-49bd-8fc6-8337a0d35c0a"
+          },
+          "type": "Compose",
+          "inputs": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        "Variable": {
+          "foreach": "@outputs('Array')",
+          "actions": {
+            "Set_to_loop_number": {
+              "metadata": {
+                "operationMetadataId": "f05bcb86-40d7-491d-8b23-c7aff22f239c"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "Count",
+                "value": "@items('Variable')"
+              }
+            },
+            "Output_variable": {
+              "runAfter": {
+                "Set_to_loop_number": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "f76a71a2-c93a-4e60-8770-c4db8e7f3315"
+              },
+              "type": "Compose",
+              "inputs": "@variables('Count')"
+            }
+          },
+          "runAfter": {
+            "Count_variable": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "09dca4d6-ec79-4a5c-a7ec-976ea36d07e8"
+          },
+          "type": "Foreach",
+          "runtimeConfiguration": {
+            "concurrency": {
+              "repetitions": 20
+            }
+          }
+        },
+        "Count_variable": {
+          "runAfter": {
+            "Array": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e1c027fa-6995-480b-9b39-c2680688478b"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "Count",
+                "type": "integer"
+              }
+            ]
+          }
+        },
+        "Compose": {
+          "foreach": "@outputs('Array')",
+          "actions": {
+            "Output_loop_number": {
+              "metadata": {
+                "operationMetadataId": "bf555332-8e3d-4cf0-a673-c829418b3011"
+              },
+              "type": "Compose",
+              "inputs": "@items('Compose')"
+            },
+            "Output_compose": {
+              "runAfter": {
+                "Output_loop_number": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "5fa0d611-784f-48f8-bde1-06c2da6a46a9"
+              },
+              "type": "Compose",
+              "inputs": "@outputs('Output_loop_number')"
+            }
+          },
+          "runAfter": {
+            "Count_variable": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "f02bd4fc-1897-4b87-bf94-370bbf7a5080"
+          },
+          "type": "Foreach",
+          "runtimeConfiguration": {
+            "concurrency": {
+              "repetitions": 20
+            }
+          }
+        },
+        "Compose_final_output": {
+          "runAfter": {
+            "Variable": [
+              "Succeeded"
+            ],
+            "Compose": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "3a1d6098-4ada-4b73-b0bf-f6bb462261de"
+          },
+          "type": "Compose",
+          "inputs": "@outputs('Output_loop_number')"
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}
