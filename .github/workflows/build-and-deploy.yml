@@ -25,7 +25,7 @@ jobs:
         environment-url: ${{ secrets.PP_DEV_ENV_URL }}
         app-id: ${{ secrets.PP_DEV_APP_ID }}
         client-secret: ${{ secrets.PP_DEV_CLIENT_SECRET }}
-        #tenant-id: ${{ secrets.PP_TENANT_ID }}
+        tenant-id: ${{ secrets.PP_TENANT_ID }}
         solution-name: ${{ env.SOLUTION_NAME }}
         output-file: ${{ runner.temp }}/${{ env.SOLUTION_NAME }}.zip
         managed: false
