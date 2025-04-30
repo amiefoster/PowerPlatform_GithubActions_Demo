@@ -1,6 +1,8 @@
 jobs:
   build:
 
+  on: push
+
     runs-on: self-hosted
 
     steps:
