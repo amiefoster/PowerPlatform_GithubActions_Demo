@@ -1,0 +1,47 @@
+name: Dev - Build and Export Power Platform Solution
+
+on:
+  workflow_dispatch:
+
+env:
+  SOLUTION_NAME: Demo
+  BUILD_VERSION: 1.0.0.${{ github.run_number }}
+
+jobs:
+  build-dev:
+    name: Build and Export from Dev
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Install Power Platform Tools
+      uses: microsoft/powerplatform-actions/setup-tools@v1
+
+    - name: Export Unmanaged Solution
+      uses: microsoft/powerplatform-actions/export-solution@v1
+      with:
+        environment-url: ${{ secrets.PP_DEV_ENV_URL }}
+        app-id: ${{ secrets.PP_DEV_APP_ID }}
+        client-secret: ${{ secrets.PP_DEV_CLIENT_SECRET }}
+        #tenant-id: ${{ secrets.PP_TENANT_ID }}
+        solution-name: ${{ env.SOLUTION_NAME }}
+        output-file: ${{ runner.temp }}/${{ env.SOLUTION_NAME }}.zip
+        managed: false
+
+    - name: Unpack Solution
+      uses: microsoft/powerplatform-actions/unpack-solution@v1
+      with:
+        solution-file: ${{ runner.temp }}/${{ env.SOLUTION_NAME }}.zip
+        solution-folder: ${{ env.SOLUTION_NAME }}
+        overwrite-files: true
+
+    - name: Commit Unpacked Solution
+      run: |
+        git config user.name "Automatic Build"
+        git config user.email "export.pipeline@azure.dev.com"
+        git checkout main
+        git add .
+        git commit -m "Unpacked solution update"
+        git push origin main
