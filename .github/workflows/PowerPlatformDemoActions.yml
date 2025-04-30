@@ -10,9 +10,9 @@ jobs:
     - name: Export Solution
       uses: microsoft/powerplatform-actions/export-solution@v1
       with:
-        environment-url: 'https://myenv.crm.dynamics.com'
-        user-name: 'me@myenv.onmicrosoft.com'
-        password-secret: ${{ secrets.PASSWORD }}
+        environment-url: 'https://org2f1caaf0.crm3.dynamics.com/'
+        app-id: ${{secrets.CLIENT_ID}}
+        client-secret: ${{ secrets.CLIENT_SECRET }}
         solution-name: aSolution
         solution-output-file: 'aSolution.zip'
         working-directory: 'out'
