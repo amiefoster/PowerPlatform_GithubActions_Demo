@@ -1,0 +1,40 @@
+name: Deploy to QA
+
+on:
+  workflow_dispatch:
+
+env:
+  SOLUTION_NAME: Demo
+
+jobs:
+  deploy-qa:
+    runs-on: windows-latest
+
+    steps:
+    - name: Install Power Platform Tools
+      uses: microsoft/powerplatform-actions/actions-install@v1
+
+    - name: Import Managed Solution to QA Env
+      uses: microsoft/powerplatform-actions/import-solution@v1
+      with:
+        environment-url: ${{ secrets.PP_QA_ENV_URL }}
+        app-id: ${{ secrets.PP_QA_APP_ID }}
+        client-secret: ${{ secrets.PP_QA_CLIENT_SECRET }}
+        tenant-id: ${{ secrets.PP_TENANT_ID }}
+        solution-input-file: ${{ github.workspace }}/${{ env.SOLUTION_NAME }}_managed.zip
+        async-operation: true
+        max-async-wait-time: 60
+        overwrite-unmanaged-customizations: true
+
+    # Optionally apply solution upgrade if needed:
+    - name: Apply Solution Upgrade
+      if: ${{ github.event.inputs.upgrade == 'true' }}
+      uses: microsoft/powerplatform-actions/apply-solution-upgrade@v1
+      with:
+        environment-url: ${{ secrets.PP_QA_ENV_URL }}
+        app-id: ${{ secrets.PP_QA_APP_ID }}
+        client-secret: ${{ secrets.PP_QA_CLIENT_SECRET }}
+        tenant-id: ${{ secrets.PP_TENANT_ID }}
+        solution-name: ${{ env.SOLUTION_NAME }}
+        async-operation: true
+        max-async-wait-time: 60
